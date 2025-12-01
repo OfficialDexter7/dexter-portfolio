@@ -325,34 +325,43 @@
     lucide.createIcons();
 
     // --- Typewriter Effect Function ---
-    function startTypewriter() {
-        const text = "Chaitu. B";
-        const titleElement = document.getElementById('hero-title');
-        let i = 0;
+let typingTimeout;   // store timeout reference
+let typingInterval;  // store interval reference
 
-        // Reset text and cursor each time
-        titleElement.textContent = "";
-        titleElement.classList.add('typing-cursor');
+function startTypewriter() {
+    const text = "Chaitu. B";
+    const titleElement = document.getElementById('hero-title');
+    let i = 0;
 
-        function type() {
-            if (i < text.length) {
-                titleElement.textContent += text.charAt(i);
-                i++;
-                setTimeout(type, 200); 
-            } else {
-                // Remove cursor after finishing
-                titleElement.classList.remove('typing-cursor');
-            }
+    // Clear any previous running timers
+    clearTimeout(typingTimeout);
+
+    // Reset text and cursor safely
+    titleElement.textContent = "";
+    titleElement.classList.add('typing-cursor');
+
+    function type() {
+        if (i < text.length) {
+            titleElement.textContent += text.charAt(i);
+            i++;
+            typingTimeout = setTimeout(type, 200);
+        } else {
+            titleElement.classList.remove('typing-cursor');
         }
-
-        setTimeout(type, 500); 
     }
 
-    // Run immediately once
-    startTypewriter();
+    typingTimeout = setTimeout(type, 500); 
+}
 
-    // --- Run every 5 seconds ---
-    setInterval(startTypewriter, 6000);
+// Run once on page load
+startTypewriter();
+
+// Clear old interval before setting a new one
+clearInterval(typingInterval);
+
+// Run every 6 seconds safely
+typingInterval = setInterval(startTypewriter, 6000);
+
 
 
             // --- 2. Scroll Animation (Intersection Observer) ---
