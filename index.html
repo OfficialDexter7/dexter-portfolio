@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaitanya's Portfolio</title>
+    
+    <!-- Load Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Load Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Set a wide, bold font for the 'blocky' feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /*
+        * 1. Core Variables and Setup
+        */
+        :root {
+            --bg-deep-black: #000000;
+            --bg-card-surface: #0A0A0A;
+            --accent-cyan: #00FFFF; /* Brightest Cyan */
+            --border-primary: #374151;
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --font-block: 'Roboto Mono', monospace; 
+        }
+
+        body {
+            background-color: var(--bg-deep-black);
+            color: var(--text-primary);
+            font-family: var(--font-block);
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 2. Global Three.js Canvas Container (Full Background, Z-index 1) */
+        #global-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; 
+            opacity: 0.25; 
+        }
+        
+        /* 3. Typewriter Cursor Styling */
+        .typing-cursor {
+            border-right: 5px solid var(--text-primary);
+            display: inline-block;
+            white-space: nowrap; /* Prevents text from wrapping during typing */
+            overflow: hidden; /* Keeps text hidden until typed */
+            animation: blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--text-primary); }
+        }
+
+
+        /* 4. Text and Structural Styles */
+        .text-accent {
+            color: var(--accent-cyan) !important;
+            font-weight: 600;
+        }
+
+        .transition-default { transition: all 0.4s ease-in-out; } 
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.0s ease-out, transform 1.0s ease-out;
+        }
+
+        .is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .animate-on-load {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUpLoad 1.2s ease-out forwards 0.5s;
+        }
+
+        @keyframes fadeInSlideUpLoad {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Fixed Header */
+        .header-blur {
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        /* Interactive Card Style (Structural) */
+        .project-card, .skill-card {
+            background-color: var(--bg-card-surface);
+            border: 1px solid var(--border-primary);
+            transform: translateY(0);
+            transition: transform 0.3s ease-out, border-color 0.3s, background-color 0.3s;
+        }
+        .project-card:hover, .skill-card:hover {
+            border-color: var(--accent-cyan);
+            background-color: #121212;
+            transform: translateY(-5px);
+        }
+        
+        .cta-button {
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .cta-button:hover {
+            background-color: #1D4ED8;
+            transform: scale(1.05);
+        }
+
+        .nav-link:hover {
+            color: var(--accent-cyan) !important;
+        }
+        
+        /* Ensure content is on top of the particles */
+        main {
+            z-index: 5;
+            position: relative; 
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 3D PARTICLE FIELD (Global Background - Z-index 1) -->
+    <canvas id="global-canvas"></canvas>
+
+    <!-- HEADER/NAVBAR (Fixed - Z-index 50) -->
+    <header class="header-blur fixed top-0 left-0 w-full z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center py-4">
+            <a href="#hero" class="text-2xl font-black text-white transition-default tracking-widest hover:text-accent">BUILD LOG</a>
+            <nav class="hidden md:flex space-x-8 text-lg font-medium">
+                <a href="#about" class="text-gray-400 nav-link transition-default">ABOUT</a>
+                <a href="#skills" class="text-gray-400 nav-link transition-default">RESOURCE PACK</a>
+                <a href="#projects" class="text-gray-400 nav-link transition-default">PROJECT CUBES</a>
+                <a href="#contact" class="text-gray-400 nav-link transition-default">SERVER CONNECT</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. HERO SECTION -->
+        <section id="hero" class="min-h-screen relative flex items-center justify-center pt-24 pb-12 overflow-hidden">
+            <div class="container mx-auto px-4 text-center lg:text-left relative z-30">
+                <div class="animate-on-load">
+                    <!-- <p class="text-xl font-medium text-accent mb-4">WORLD ARCHITECT MODE: ACTIVATED</p> -->
+                    <h1 id="hero-title" class="text-6xl md:text-8xl lg:text-[7rem] font-black leading-none mb-6 tracking-tighter text-white">
+                        <!-- Typewriter text injected here by JS -->
+                    </h1>
+                    <h2 class="text-3xl md:text-5xl font-light text-gray-300 mb-10">
+                        ENGINEERING <span class="text-accent font-semibold">STRUCTURED DIGITAL WORLD</span>.
+                    </h2>
+                    <p class="text-xl max-w-4xl mx-auto lg:mx-0 text-gray-400 mb-12">
+                        Welcome to my world. I’m Chaitanya, a developer who loves building resilient, modular, and high-performance applications. I take complex ideas, break them into clean architectures, and engineer systems that stay fast, stable, and reliable in the real world.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
+                        <a href="#projects" class="inline-flex items-center text-xl font-black py-4 px-10 rounded-lg cta-button bg-accent text-white">
+                            <i data-lucide="compass" class="w-6 h-6 mr-3"></i> EXPLORE CUBES
+                        </a>
+                        <a href="https://drive.google.com target="_blank" class="inline-flex items-center text-xl border-2 border-accent text-accent font-bold py-4 px-10 rounded-lg hover:bg-accent/10 transition-default">
+                            GET BLUEPRINTS
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ABOUT SECTION -->
+        <section id="about" class="py-24">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-16 animate-on-scroll text-white">BLOCK ARCHITECTURE MANIFESTO</h2>
+                <div class="max-w-5xl mx-auto lg:grid lg:grid-cols-2 gap-16 items-start">
+                    <div class="animate-on-scroll">
+                        <h3 class="text-3xl font-semibold text-accent mb-4">BUILDING PRINCIPLES</h3>
+                        <p class="text-lg mb-6 leading-relaxed text-gray-300">
+                            Every system I build is designed for high scalability and reliable performance. I approach code as a carefully managed resource that is structured, efficient, and used only when it adds meaningful value.
+                        </p>
+                        <p class="text-lg mb-6 leading-relaxed text-gray-400">
+                            I specialize in decomposing complex systems into efficient, independent service components, using modern Python and Java, and deploying them reliably through Docker and AWS-based infrastructure.
+                        </p>
+                    </div>
+                    <div class="mt-10 lg:mt-0 bg-bg-card-surface p-8 rounded-2xl border border-border-primary animate-on-scroll transition-default hover:border-accent skill-card">
+                        <h3 class="text-2xl font-semibold mb-6 text-accent flex items-center">
+                            <i data-lucide="layers" class="w-6 h-6 mr-3"></i> CONSTRUCTION LAYERS
+                        </h3>
+                        <ul class="space-y-4 text-lg text-gray-300">
+                            <li class="flex items-center"><span class="text-accent mr-3">&gt;</span> Bedrock: Data Integrity (DB)</li>
+                            <li class="flex items-center"><span class="text-accent mr-3">&gt;</span> Redstone: Logic & APIs (Backend)</li>
+                            <li class="flex items-center"><span class="text-accent mr-3">&gt;</span> Obsidian: UI/UX Shield (Frontend)</li>
+                            <li class="flex items-center"><span class="text-accent mr-3">&gt;</span> Portal: CI/CD & Cloud (Infra)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 3. SKILLS SECTION -->
+        <section id="skills" class="py-24 bg-bg-card-surface border-y border-border-primary">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-16 animate-on-scroll text-white">RESOURCE PACK</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                    
+                    <div class="p-6 rounded-xl skill-card transition-default animate-on-scroll text-center bg-gray-900/40">
+                        <i data-lucide="type" class="w-10 h-10 mx-auto mb-3 text-accent"></i>
+                        <p class="font-bold text-lg">DIGITAL TOOLS</p>
+                        <p class="text-sm text-gray-400">Azure, GCP</p>
+                    </div>
+                    <div class="p-6 rounded-xl skill-card transition-default animate-on-scroll text-center bg-gray-900/40" style="animation-delay: 0.1s;">
+                        <i data-lucide="aperture" class="w-10 h-10 mx-auto mb-3 text-accent"></i>
+                        <p class="font-bold text-lg">UTILITIES</p>
+                        <p class="text-sm text-gray-400">Python, Java, SQL</p>
+                    </div>
+                    <div class="p-6 rounded-xl skill-card transition-default animate-on-scroll text-center bg-gray-900/40" style="animation-delay: 0.2s;">
+                        <i data-lucide="hard-drive" class="w-10 h-10 mx-auto mb-3 text-accent"></i>
+                        <p class="font-bold text-lg">STORAGE BLOCKS</p>
+                        <p class="text-sm text-gray-400">MySQL, Firebase DB</p>
+                    </div>
+                    <div class="p-6 rounded-xl skill-card transition-default animate-on-scroll text-center bg-gray-900/40" style="animation-delay: 0.3s;">
+                        <i data-lucide="cloud-cog" class="w-10 h-10 mx-auto mb-3 text-accent"></i>
+                        <p class="font-bold text-lg">DEPLOYMENT</p>
+                        <p class="text-sm text-gray-400">Vercel, Replit, AWS</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PROJECTS SECTION -->
+        <section id="projects" class="py-24">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-16 animate-on-scroll text-white">PROJECT CUBES</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+                    <!-- Project Card 1: Trading API -->
+                    <div class="animate-on-scroll">
+                        <div class="p-8 rounded-2xl project-card transition-default">
+                            <span class="text-xs font-semibold text-accent mb-2 block tracking-widest">CUBE 01: AI EVALUATION MATRIX</span>
+                            <h3 class="text-3xl font-bold mb-3 text-white">AI RESUME ANALYZER</h3>
+                            <p class="text-gray-400 mb-6">Built an AI-powered resume analysis engine using Python, Streamlit, and Gemini API, leveraging TF-IDF and cosine similarity for real-time skill matching and scoring.</p>
+                            <p class="font-medium text-gray-500 mb-6">Stack: Python, Streamlit, NLP, TF-IDF</p>
+                            <div class="flex space-x-6">
+                                <span class="text-accent font-semibold flex items-center transition-default hover:translate-x-1 opacity-70 cursor-default">
+                                    COMING SOON <i data-lucide="chevron-right" class="w-4 h-4 ml-2"></i>
+                                </span>
+
+                                <a href="https://github.com" target="_blank" class="text-gray-500 hover:text-white flex items-center transition-default">
+                                    <i data-lucide="github" class="w-4 h-4 mr-1"></i> VIEW BLOCKS
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 2: Modular Design System -->
+                    <div class="animate-on-scroll" style="animation-delay: 0.1s;">
+                        <div class="p-8 rounded-2xl project-card transition-default">
+                            <span class="text-xs font-semibold text-accent mb-2 block tracking-widest">CUBE 02: DYNAMIC FORECASTING</span>
+                            <h3 class="text-3xl font-bold mb-3 text-white">RainRover Weather App</h3>
+                            <p class="text-gray-400 mb-6">Constructed a shared inventory (component library) using React, TypeScript, Storybook, and TailwindCSS, ensuring every team builds with consistent, high-quality blocks.</p>
+                            <p class="font-medium text-gray-500 mb-6">Stack: React, Tailwind CSS, JavaScript</p>
+                            <div class="flex space-x-6">
+                                <a href="https://rain-rover.vercel.app/" target="_blank" class="text-accent hover:underline font-semibold flex items-center transition-default hover:translate-x-1">
+                                    VIEW INVENTORY <i data-lucide="chevron-right" class="w-4 h-4 ml-2"></i>
+                                </a>
+                                <a href="https://github.com/" target="_blank" class="text-gray-500 hover:text-white flex items-center transition-default">
+                                    <i data-lucide="github" class="w-4 h-4 mr-1"></i> VIEW BLOCKS
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CONTACT SECTION -->
+        <section id="contact" class="py-24 bg-bg-card-surface border-t border-border-primary">
+            <div class="container mx-auto px-4 text-center max-w-4xl">
+                <h2 class="text-4xl font-bold mb-6 animate-on-scroll text-white">INITIATE SERVER CONNECTION</h2>
+                <p class="text-xl text-gray-400 mb-12 animate-on-scroll">
+                    Ready to load new worlds. Send coordinates for a collaboration build, lead role, or complex system challenge.
+                </p>
+                
+                <a href="mailto:chaitanyabadukale757@gmail.com"
+                class="inline-flex items-center text-2xl font-black py-4 px-12 rounded-lg cta-button bg-accent text-white animate-on-scroll">
+                    <i data-lucide="send" class="w-6 h-6 mr-3"></i> TRANSMIT DATA PACKET
+                </a>
+
+
+
+
+                <div class="flex justify-center space-x-8 mt-16 text-lg animate-on-scroll">
+                    <a href="https://www.linkedin.com/in/chaitanya-badukale" target="_blank" class="text-gray-400 hover:text-accent transition-default flex items-center">
+                        <i data-lucide="linkedin" class="w-5 h-5 mr-1"></i> LINKEDIN
+                    </a>
+                    <a href="https://github.com" target="_blank" class="text-gray-400 hover:text-accent transition-default flex items-center">
+                        <i data-lucide="github" class="w-5 h-5 mr-1"></i> GITHUB
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-6">
+        <div class="container mx-auto text-center text-sm text-gray-600">
+            <p>BUILD LOG COMPLETE. &copy; 2025 Chaitanya. Code Blocks Deployed Successfully. </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Three.js, Animations, and Typewriter -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    lucide.createIcons();
+
+    // --- Typewriter Effect Function ---
+    function startTypewriter() {
+        const text = "Chaitu. B";
+        const titleElement = document.getElementById('hero-title');
+        let i = 0;
+
+        // Reset text and cursor each time
+        titleElement.textContent = "";
+        titleElement.classList.add('typing-cursor');
+
+        function type() {
+            if (i < text.length) {
+                titleElement.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, 200); 
+            } else {
+                // Remove cursor after finishing
+                titleElement.classList.remove('typing-cursor');
+            }
+        }
+
+        setTimeout(type, 500); 
+    }
+
+    // Run immediately once
+    startTypewriter();
+
+    // --- Run every 5 seconds ---
+    setInterval(startTypewriter, 6000);
+
+
+            // --- 2. Scroll Animation (Intersection Observer) ---
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observerCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            };
+            const observer = new IntersectionObserver(observerCallback, observerOptions);
+            animatedElements.forEach(element => { observer.observe(element); });
+
+
+            // --- 3. Three.js Particle Background (Adjusted Speed and Full Screen) ---
+            let scene, camera, renderer, particles, particleCount;
+            let container;
+            // Tighter range for better visibility and smoother looping
+            const PARTICLE_RANGE = 1000; 
+            // New variable for desired particle speed (lower is slower)
+            const PARTICLE_SPEED = 0.05; 
+
+            function initThreeJS() {
+                // Find the canvas container (assuming it's the canvas element itself)
+                container = document.getElementById('global-canvas');
+
+                // Scene
+                scene = new THREE.Scene();
+
+                // Camera: Use a closer position but wider FOV
+                // Aspect ratio ensures it fills the viewport size dynamically
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+                camera.position.z = 500; 
+
+                // Renderer
+                // We use window.innerWidth/Height here to ensure it covers the whole screen initially
+                renderer = new THREE.WebGLRenderer({ canvas: container, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                // Particles Geometry
+                particleCount = 5000;
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+
+                for (let i = 0; i < particleCount; i++) {
+                    vertices.push(
+                        (Math.random() - 0.5) * PARTICLE_RANGE * 2,
+                        (Math.random() - 0.5) * PARTICLE_RANGE * 2,
+                        (Math.random() - 0.5) * PARTICLE_RANGE * 2
+                    );
+                }
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+                // Particles Material
+                const material = new THREE.PointsMaterial({
+                    color: 0x00FFFF,
+                    size: 5.0,
+                    transparent: true,
+                    opacity: 1.0,
+                    blending: THREE.AdditiveBlending,
+                });
+
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                // Listen to window resize to maintain full screen
+                window.addEventListener('resize', onWindowResize, false);
+                animate();
+            }
+
+            function onWindowResize() {
+                // Use window.innerWidth/Height to resize to the full screen resolution
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Subtle rotation (Unchanged)
+                particles.rotation.x += 0.0001;
+                particles.rotation.y += 0.0002;
+
+                // SLOWER Movement: Use the defined PARTICLE_SPEED variable
+                particles.position.z -= PARTICLE_SPEED; 
+
+                // Loop particles seamlessly: Reset Z position once the entire cloud has passed
+                // PARTICLE_RANGE is 1000. When it passes -1000, reset it.
+                if (particles.position.z < -PARTICLE_RANGE) {
+                    particles.position.z = PARTICLE_RANGE; 
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            // Initialize Three.js after the whole window loads
+            window.onload = initThreeJS;
+        });
+    </script>
+</body>
+</html>
